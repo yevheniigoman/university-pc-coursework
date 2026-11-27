@@ -17,10 +17,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -91,5 +88,11 @@ public class Controller {
             dtos = postings.stream().map(id -> new SearchResponseDto(id)).toList();
         }
         return ResponseEntity.status(HttpStatus.OK).body(dtos);
+    }
+
+    @GetMapping("/api/stats")
+    public ResponseEntity<StatsDto> stats() {
+        var body = new StatsDto(documents.get(), buildTime.get(), threads.get());
+        return ResponseEntity.status(HttpStatus.OK).body(body);
     }
 }
