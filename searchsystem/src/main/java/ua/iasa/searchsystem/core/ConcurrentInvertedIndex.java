@@ -20,7 +20,7 @@ public class ConcurrentInvertedIndex implements InvertedIndex {
 
     private volatile LinkedList<Node>[] table;
     private final AtomicInteger size = new AtomicInteger(0);
-    private final ReentrantLock[] strides = new ReentrantLock[1 << 3];
+    private final ReentrantLock[] strides = new ReentrantLock[1 << 4];
     private volatile int threshold;
 
     private final ReentrantLock resizeLock = new ReentrantLock();
@@ -199,6 +199,48 @@ public class ConcurrentInvertedIndex implements InvertedIndex {
     @Override
     public int size() {
         return size.get();
+    }
+
+    @Override
+    public void clear() {
+        if (size.get() <= 0) {
+            return;
+        }
+
+        resizeLock.lock();
+        try {
+            while (resizing) {
+                resizeFinished.awaitUninterruptibly();
+            }
+            resizing = true;
+        } finally {
+            resizeLock.unlock();
+        }
+
+        for (ReentrantLock stride : strides) {
+            stride.lock();
+        }
+
+        try {
+            if (size.get() > 0) {
+                size.set(0);
+                for (int i = 0; i < table.length; i++) {
+                    table[i] = null;
+                }
+            }
+        } finally {
+            for (int i = strides.length - 1; i >= 0; i--) {
+                strides[i].unlock();
+            }
+
+            resizeLock.lock();
+            try {
+                resizing = false;
+                resizeFinished.signalAll();
+            } finally {
+                resizeLock.unlock();
+            }
+        }
     }
 
     static int tableSizeFor(int capacity) {
