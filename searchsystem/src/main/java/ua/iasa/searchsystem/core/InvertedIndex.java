@@ -6,6 +6,7 @@ public interface InvertedIndex {
     void put(String term, int docId);
     SortedSet<Integer> get(String term);
     int size();
+    void clear();
 
     interface Entry {
         String term();

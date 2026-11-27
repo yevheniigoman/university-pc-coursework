@@ -83,6 +83,16 @@ public class DefaultInvertedIndex implements InvertedIndex {
         return size;
     }
 
+    @Override
+    public void clear() {
+        if (table != null && size > 0) {
+            size = 0;
+            for (int i = 0; i < table.length; i++) {
+                table[i] = null;
+            }
+        }
+    }
+
     private static int hash(String term) {
         int h;
         return (h = term.hashCode()) ^ (h >>> 16);
