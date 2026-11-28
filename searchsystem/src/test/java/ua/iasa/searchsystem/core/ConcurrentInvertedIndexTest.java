@@ -69,7 +69,7 @@ public class ConcurrentInvertedIndexTest {
     };
     @Test
     public void whenThresholdExceeds_thenResizeWithPreservingExistingItems() {
-        InvertedIndex index = new ConcurrentInvertedIndex(2);
+        InvertedIndex index = new AdvancedConcurrentInvertedIndex(2);
         index.put("football", 1);
         index.put("football", 2);
         index.put("football", 3);
@@ -91,7 +91,7 @@ public class ConcurrentInvertedIndexTest {
 
     @Test
     public void whenAddExistingTermWithDifferentDocId_thenAppendDocIdToTermPostings() {
-        InvertedIndex index = new ConcurrentInvertedIndex(2);
+        InvertedIndex index = new AdvancedConcurrentInvertedIndex(2);
         index.put("hello", 1);
         index.put("hello", 2);
         index.put("hello", 3);
@@ -102,7 +102,7 @@ public class ConcurrentInvertedIndexTest {
 
     @Test
     public void whenAddExistingTermWithExistingDocId_thenDoNotStoreDuplicateDocId() {
-        InvertedIndex index = new ConcurrentInvertedIndex(2);
+        InvertedIndex index = new AdvancedConcurrentInvertedIndex(2);
         index.put("hello", 3);
         index.put("hello", 4);
         index.put("hello", 4);
@@ -120,7 +120,7 @@ public class ConcurrentInvertedIndexTest {
             }
         }
 
-        InvertedIndex concurrentIndex = new ConcurrentInvertedIndex(8);
+        InvertedIndex concurrentIndex = new AdvancedConcurrentInvertedIndex(8);
         int threads = 3;
         var latch = new CountDownLatch(1);
         try (ExecutorService executor = Executors.newFixedThreadPool(threads)) {

@@ -1,8 +1,9 @@
 package ua.iasa.searchsystem;
 
-import ua.iasa.searchsystem.core.ConcurrentInvertedIndex;
 import ua.iasa.searchsystem.dto.*;
 import ua.iasa.searchsystem.core.InvertedIndex;
+import ua.iasa.searchsystem.core.ConcurrentInvertedIndex;
+import ua.iasa.searchsystem.core.AdvancedConcurrentInvertedIndex;
 import ua.iasa.searchsystem.core.construction.DocumentMetadata;
 import ua.iasa.searchsystem.core.construction.DefaultDocumentMetadata;
 import ua.iasa.searchsystem.core.construction.InvertedIndexConstructionRoutine;
@@ -27,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class Controller {
-    private volatile InvertedIndex index = new ConcurrentInvertedIndex();
+    private volatile InvertedIndex index = new AdvancedConcurrentInvertedIndex();
     private final AtomicInteger documents = new AtomicInteger(0);
     private final AtomicInteger threads = new AtomicInteger(0);
     private final AtomicLong buildTime = new AtomicLong(0);
@@ -43,7 +44,7 @@ public class Controller {
         InvertedIndex newIndex = new ConcurrentInvertedIndex();
 
         Queue<DocumentMetadata> queue = new ConcurrentLinkedQueue<>();
-        Path dir = Paths.get("../data");
+        Path dir = Paths.get("../data/D1GB");
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
             int id = 1;
             for (Path path : stream) {
